@@ -59,7 +59,16 @@ def extract_data_from_league(url)
   end
 end
 
-urls = %w[https://www.kicker.de/bundesliga/startseite https://www.kicker.de/2-bundesliga/startseite https://www.kicker.de/3-liga/startseite https://www.kicker.de/regionalliga/startseite]
-urls.each do |url|
-  extract_data_from_league(url)
+leagues = [
+  {:name => "Bundesliga", :url => "https://www.kicker.de/bundesliga/startseite"},
+  {:name => "2. Bundesliga", :url => "https://www.kicker.de/2-bundesliga/startseite"},
+  {:name => "3. Liga", :url => "https://www.kicker.de/3-liga/startseite"},
+  {:name => "Regionalliga", :url => "https://www.kicker.de/regionalliga/startseite"}
+]
+leagues.each do |league|
+  puts "\n"
+  puts league[:name] + " from kicker.de: " + league[:url]
+  puts "Matches from current matchday:"
+  extract_data_from_league(league[:url])
+  puts "----------------------------------"
 end
