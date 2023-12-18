@@ -11,6 +11,9 @@
     </content>
     <orderEntry type="jdk" jdkName="ruby-3.2.2-p53 (2)" jdkType="RUBY_SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="bson (v4.15.0, ruby-3.2.2-p53 (2)) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bundler (v2.4.10, ruby-3.2.2-p53 (2)) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mongo (v2.19.3, ruby-3.2.2-p53 (2)) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="nokogiri (v1.15.5, ruby-3.2.2-p53 (2)) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="racc (v1.7.3, ruby-3.2.2-p53 (2)) [gem]" level="application" />
   </component>

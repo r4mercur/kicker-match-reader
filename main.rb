@@ -1,6 +1,12 @@
 require 'nokogiri'
 require 'open-uri'
+require 'mongo'
 require_relative 'match'
+
+Mongo::Logger.logger.level = ::Logger::FATAL
+client = Mongo::Client.new("mongodb://admin:Lw4EGf67a6WJ@localhost:27017")
+db = client.use('football')
+$collection = db[:matches]
 
 def extract_data_from_league(url)
   begin
@@ -40,10 +46,8 @@ def extract_data_from_league(url)
 
     # transform results into match logic
     formatted_results = []
-    if results.length == match_counter * 2
-      results.each_slice(2) do |home_score, away_score |
-        formatted_results << "#{home_score}:#{away_score}"
-      end
+    results.each_slice(2) do |home_score, away_score |
+      formatted_results << "#{home_score}:#{away_score}"
     end
 
 
@@ -53,6 +57,9 @@ def extract_data_from_league(url)
 
       # print results
       puts "#{match.home_team} - #{match.away_team} #{match.result}"
+
+      # save to database
+      $collection.insert_one({:home_team => match.home_team, :away_team => match.away_team, :result => match.result})
     end
   rescue => exception
     puts "Error: #{exception}"
