@@ -59,7 +59,13 @@ def extract_data_from_league(url)
       puts "#{match.home_team} - #{match.away_team} #{match.result}"
 
       # save to database
-      $collection.insert_one({:home_team => match.home_team, :away_team => match.away_team, :result => match.result})
+      check = $collection.find({:home_team => match.home_team, :away_team => match.away_team}).first
+      if check
+        $collection.update_one({:home_team => match.home_team, :away_team => match.away_team}, {"$set" => {:result => match.result}})
+        next
+      else
+        $collection.insert_one({:home_team => match.home_team, :away_team => match.away_team, :result => match.result})
+      end
     end
   rescue => exception
     puts "Error: #{exception}"
