@@ -87,12 +87,12 @@ seasons = [
 ]
 
 leagues = [
-  {:name => "Bundesliga", :url => [], :season => ""},
-  {:name => "2. Bundesliga", :url => [], :season => ""},
-  {:name => "3. Liga", :url => [], :season => ""},
-  {:name => "Premier League", :url => [], :season => ""},
-  {:name => "La Liga", :url => [], :season => ""},
-  {:name => "Serie A", :url => [], :season => ""},
+  {:name => "Bundesliga", :url => []},
+  {:name => "2. Bundesliga", :url => []},
+  {:name => "3. Liga", :url => []},
+  {:name => "Premier League", :url => []},
+  {:name => "La Liga", :url => []},
+  {:name => "Serie A", :url => []},
 ]
 
 seasons.each do |season|
