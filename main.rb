@@ -61,10 +61,16 @@ def extract_data_from_league(url)
       # save to database
       check = $collection.find({:home_team => match.home_team, :away_team => match.away_team}).first
       if check
-        $collection.update_one({:home_team => match.home_team, :away_team => match.away_team}, {"$set" => {:result => match.result}})
+        $collection.update_one({:home_team => match.home_team, :away_team => match.away_team},
+                               {"$set" => {:result => match.result}})
         next
       else
-        $collection.insert_one({:home_team => match.home_team, :away_team => match.away_team, :result => match.result})
+        data = url.match(/spieltag\/(\d{4}-\d{2})\/(\d+)/)
+        season = data[1]
+        matchday = data[2]
+
+        $collection.insert_one({:home_team => match.home_team, :away_team => match.away_team,
+                                :result => match.result, :season => season, :matchday => matchday})
       end
     end
   rescue => exception
@@ -72,16 +78,51 @@ def extract_data_from_league(url)
   end
 end
 
-leagues = [
-  {:name => "Bundesliga", :url => "https://www.kicker.de/bundesliga/startseite"},
-  {:name => "2. Bundesliga", :url => "https://www.kicker.de/2-bundesliga/startseite"},
-  {:name => "3. Liga", :url => "https://www.kicker.de/3-liga/startseite"},
-  {:name => "Regionalliga", :url => "https://www.kicker.de/regionalliga/startseite"}
+seasons = [
+  {:name => "2019-20"},
+  {:name => "2020-21"},
+  {:name => "2021-22"},
+  {:name => "2022-23"},
+  {:name => "2023-24"},
 ]
+
+leagues = [
+  {:name => "Bundesliga", :url => [], :season => ""},
+  {:name => "2. Bundesliga", :url => [], :season => ""},
+  {:name => "3. Liga", :url => [], :season => ""},
+  {:name => "Premier League", :url => [], :season => ""},
+  {:name => "La Liga", :url => [], :season => ""},
+  {:name => "Serie A", :url => [], :season => ""},
+]
+
+seasons.each do |season|
+  sname = season[:name]
+
+  leagues.each do |league|
+    league[:season] = sname
+  end
+
+  (1..34).each do |i|
+    leagues[0][:url] << "https://www.kicker.de/bundesliga/spieltag/#{sname}/#{i}"
+    leagues[1][:url] << "https://www.kicker.de/2-bundesliga/spieltag/#{sname}/#{i}"
+  end
+
+  (1..38).each do |i|
+    leagues[2][:url] << "https://www.kicker.de/3-liga/spieltag/#{sname}/#{i}"
+    leagues[3][:url] << "https://www.kicker.de/premier-league/spieltag/#{sname}/#{i}"
+    leagues[4][:url] << "https://www.kicker.de/la-liga/spieltag/#{sname}/#{i}"
+    leagues[5][:url] << "https://www.kicker.de/serie-a/spieltag/#{sname}/#{i}"
+  end
+end
+
+
+
 leagues.each do |league|
   puts "\n"
-  puts league[:name] + " from kicker.de: " + league[:url]
-  puts "Matches from current matchday:"
-  extract_data_from_league(league[:url])
-  puts "----------------------------------"
+  puts league[:name] + " from kicker.de: "
+  league[:url].each do |url|
+    puts "Matches from current matchday:" + url
+    extract_data_from_league(url)
+    puts "----------------------------------"
+  end
 end
