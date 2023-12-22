@@ -5,14 +5,15 @@ require_relative 'match'
 
 Mongo::Logger.logger.level = ::Logger::FATAL
 client = Mongo::Client.new("mongodb://admin:Lw4EGf67a6WJ@localhost:27017")
-db = client.use('football')
-$collection = db[:matches]
+$db = client.use('football')
 
-def extract_data_from_league(url)
+def extract_data_from_league(url, season = nil, matchday = nil)
   begin
     html = URI.open(url)
     doc = Nokogiri::HTML(html, nil, 'UTF-8')
 
+
+    collection = $db[:matches]
     match_counter = 0
     matches = []
     teams = []
@@ -59,9 +60,9 @@ def extract_data_from_league(url)
       puts "#{match.home_team} - #{match.away_team} #{match.result}"
 
       # save to database
-      check = $collection.find({:home_team => match.home_team, :away_team => match.away_team}).first
+      check = collection.find({:home_team => match.home_team, :away_team => match.away_team}).first
       if check
-        $collection.update_one({:home_team => match.home_team, :away_team => match.away_team},
+        collection.update_one({:home_team => match.home_team, :away_team => match.away_team},
                                {"$set" => {:result => match.result}})
         next
       else
@@ -69,7 +70,7 @@ def extract_data_from_league(url)
         season = data[1]
         matchday = data[2]
 
-        $collection.insert_one({:home_team => match.home_team, :away_team => match.away_team,
+        collection.insert_one({:home_team => match.home_team, :away_team => match.away_team,
                                 :result => match.result, :season => season, :matchday => matchday})
       end
     end
@@ -103,11 +104,13 @@ seasons.each do |season|
   end
 
   (1..34).each do |i|
+    leagues[0][:matchday], leagues[1][:matchday] = i
     leagues[0][:url] << "https://www.kicker.de/bundesliga/spieltag/#{sname}/#{i}"
     leagues[1][:url] << "https://www.kicker.de/2-bundesliga/spieltag/#{sname}/#{i}"
   end
 
   (1..38).each do |i|
+    leagues[2][:matchday], leagues[3][:matchday], leagues[4][:matchday], leagues[5][:matchday] = i
     leagues[2][:url] << "https://www.kicker.de/3-liga/spieltag/#{sname}/#{i}"
     leagues[3][:url] << "https://www.kicker.de/premier-league/spieltag/#{sname}/#{i}"
     leagues[4][:url] << "https://www.kicker.de/la-liga/spieltag/#{sname}/#{i}"
@@ -122,7 +125,7 @@ leagues.each do |league|
   puts league[:name] + " from kicker.de: "
   league[:url].each do |url|
     puts "Matches from current matchday:" + url
-    extract_data_from_league(url)
+    extract_data_from_league(url, league[:season], league[:matchday])
     puts "----------------------------------"
   end
 end
