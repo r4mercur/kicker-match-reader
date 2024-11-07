@@ -1,0 +1,19 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    bson (5.0.1)
+    mongo (2.21.0)
+      bson (>= 4.14.1, < 6.0.0)
+    nokogiri (1.16.7-x64-mingw-ucrt)
+      racc (~> 1.4)
+    racc (1.8.1)
+
+PLATFORMS
+  x64-mingw-ucrt
+
+DEPENDENCIES
+  mongo (~> 2.21)
+  nokogiri (~> 1.11)
+
+BUNDLED WITH
+   2.5.18
